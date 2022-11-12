@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:ticket_scan/models/verification.dart';
@@ -90,31 +91,35 @@ class PreviousScansScreenState extends State<PreviousScansScreen> {
         floatingActionButton:Consumer<TicketProvider>(
           builder: (context,provider,child){
             return FloatingActionButton(
-              child: const Icon(Icons.document_scanner),
+              child: const Icon(Icons.document_scanner,color: Colors.white70,),
               onPressed: () async{
                 var status = await Permission.camera.request();
                 if(status.isGranted){
                   String? cameraScanResult = await scanner.scan();
-                  String ticketCode = cameraScanResult!.split("\n")[0].split(":")[1] ?? "";
-                  provider.verify(context, ticketCode);
+                  bool invalidScan = false;
+                  if(cameraScanResult != null){
+                     List<String> scanResults = cameraScanResult.split("\n");
+                     if(scanResults.length == 4){
+                        String result = scanResults.elementAt(0);
+                        List<String> results = result.split(":");
+                        if(results.length == 2){
+                          String ticketCode = results[0];
+                          if (!mounted) return;
+                          provider.verify(context, ticketCode);
+                        }else{
+                          invalidScan = true;
+                        }
+                     }else{
+                       invalidScan = true;
+                     }
+                  }else{
+                    invalidScan = true;
+                  }
+                  if(invalidScan){
+                    EasyLoading.showSuccess('Invalid QR code');
+                  }
                 }else{
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: const Text("Error!!!"),
-                          content: const Text("Camera Permission is needed to Scan the QR code"),
-                          actions: [
-                            TextButton(
-                              child: const Text("Close"),
-                              onPressed: () {
-                                Routes.router.pop(context);
-                              },
-                            )
-                          ],
-                        );
-                      }
-                  );
+                  EasyLoading.showError('Camera Permission is needed');
                 }
               },
             );
