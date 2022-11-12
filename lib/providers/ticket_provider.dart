@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ticket_scan/api/request/ticket_request.dart';
 import 'package:ticket_scan/api/response/verifications_response.dart';
@@ -42,41 +43,9 @@ class TicketProvider with ChangeNotifier {
         Verification? verification = response.verification ;
         verifications!.add(verification);
         notifyListeners();
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text("Success"),
-                content: Text(response.message ?? ""),
-                actions: [
-                  TextButton(
-                    child: const Text("Close"),
-                    onPressed: () {
-                      Routes.router.pop(context);
-                    },
-                  )
-                ],
-              );
-            }
-       );
+        EasyLoading.showSuccess('Successfully Verified');
       }else if(response != null && response.status == "error"){
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text("Error!!!"),
-                content: Text(response.message ?? ""),
-                actions: [
-                  TextButton(
-                    child: const Text("Close"),
-                    onPressed: () {
-                      Routes.router.pop(context);
-                    },
-                  )
-                ],
-              );
-            }
-        );
+        EasyLoading.showError('Unable to Verify....');
       }
     }
   }

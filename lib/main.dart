@@ -3,10 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:ticket_scan/providers/auth_provider.dart';
 import 'package:ticket_scan/providers/ticket_provider.dart';
 import 'package:ticket_scan/routes/route.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 void main() {
   Routes.configure();
-
   runApp(const MainComponent());
 }
 
@@ -29,6 +29,7 @@ class MainComponent extends StatelessWidget {
         ),
         initialRoute: '/',
         onGenerateRoute: Routes.router.generator,
+        builder: EasyLoading.init(),
       ),
     );
   }

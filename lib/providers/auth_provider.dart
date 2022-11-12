@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ticket_scan/api/request/auth_request.dart';
 import 'package:ticket_scan/api/response/verify_user_response.dart';
@@ -15,7 +16,9 @@ class AuthProvider with ChangeNotifier {
   VerifyUserResponse? verifyUserResponse = VerifyUserResponse();
 
   login(BuildContext context, email, password) async{
+    EasyLoading.show(status: 'Please wait...');
     logInResponse = await AuthRequest.login(email, password);
+    EasyLoading.dismiss();
     if (logInResponse != null) {
       if (logInResponse!.status == "success") {
         SharedPreferences preference = await SharedPreferences.getInstance();
@@ -23,22 +26,7 @@ class AuthProvider with ChangeNotifier {
         await preference.setString("user", jsonEncode(logInResponse!.user!.toJson()));
         Routes.router.navigateTo(context, "previous/scans",transition: TransitionType.material);
       }else{
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Text("Error!!!"),
-                content: Text(logInResponse!.message ?? 'Email or Password is Wrong'),
-                actions: [
-                  TextButton(
-                    child: Text("Close"),
-                    onPressed: () {
-                      Routes.router.pop(context);
-                    },
-                  )
-                ],
-              );
-            });
+        EasyLoading.showToast("User Name or Password is wrong");
       }
     }
   }
@@ -61,8 +49,10 @@ class AuthProvider with ChangeNotifier {
   }
 
   logout(BuildContext context) async{
+    EasyLoading.show(status: 'Please wait...');
     SharedPreferences preference = await SharedPreferences.getInstance();
     bool cleared = await preference.clear();
+    EasyLoading.dismiss();
     if(cleared){
       Routes.router.navigateTo(context, "login");
     }
