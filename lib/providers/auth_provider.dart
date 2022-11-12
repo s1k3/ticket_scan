@@ -32,12 +32,15 @@ class AuthProvider with ChangeNotifier {
   }
 
   verify(BuildContext context) async {
+    EasyLoading.show(status: 'Please wait...');
     SharedPreferences preference = await SharedPreferences.getInstance();
     final String? apiToken = preference.getString("api_token");
     if(apiToken == null){
+      EasyLoading.dismiss();
       Routes.router.navigateTo(context, "login",transition: TransitionType.material);
     }else{
       verifyUserResponse = await AuthRequest.verify(apiToken);
+      EasyLoading.dismiss();
       if(verifyUserResponse == null){
         Routes.router.navigateTo(context, "login",transition: TransitionType.material);
       }else if(verifyUserResponse?.status == "error"){

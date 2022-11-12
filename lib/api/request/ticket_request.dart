@@ -19,6 +19,7 @@ class TicketRequest{
     var url = Uri.parse(VERIFY_TICKET_URL);
     var params = <String, dynamic>{};
     params['api_token'] = apiToken;
+    params['ticket_code'] = ticketCode;
     final response = await http.post(url, body: params);
     if (response.statusCode == 200) {
       return VerifyTicketResponse.fromJson(jsonDecode(response.body));

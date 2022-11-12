@@ -8,7 +8,6 @@ import 'package:ticket_scan/models/verification.dart';
 import 'package:ticket_scan/providers/ticket_provider.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
 import '../providers/auth_provider.dart';
-import '../routes/route.dart';
 
 class PreviousScansScreen extends StatefulWidget{
   const PreviousScansScreen({super.key});
@@ -99,11 +98,11 @@ class PreviousScansScreenState extends State<PreviousScansScreen> {
                   bool invalidScan = false;
                   if(cameraScanResult != null){
                      List<String> scanResults = cameraScanResult.split("\n");
-                     if(scanResults.length == 4){
+                     if(scanResults.length == 5){
                         String result = scanResults.elementAt(0);
                         List<String> results = result.split(":");
                         if(results.length == 2){
-                          String ticketCode = results[0];
+                          String ticketCode = results[1];
                           if (!mounted) return;
                           provider.verify(context, ticketCode);
                         }else{
